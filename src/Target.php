@@ -14,9 +14,12 @@ use yii\base\InvalidValueException;
 use yii\di\Instance;
 use yii\httpclient\Client;
 use yii\log\Logger;
+use yii\helpers\StringHelper;
 
 class Target extends \yii\log\Target
 {
+    const MAX_CODE_LENGTH = 3584;
+
     /**
      * @var Client|array|string Yii HTTP client configuration.
      * This can be a component ID, a configuration array or a Client instance.
@@ -231,6 +234,7 @@ class Target extends \yii\log\Target
         }
 
         if ($config['wrapAsCode']) {
+            $value = (StringHelper::byteLength($value) >= self::MAX_CODE_LENGTH) ? StringHelper::truncate($value, self::MAX_CODE_LENGTH) . "\n..." : $value;
             if ($config['short']) {
                 $value = '`' . $value . '`';
             } else {
